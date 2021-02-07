@@ -1,14 +1,47 @@
 /* eslint-disable jsx-a11y/accessible-emoji */
 
 import React, { useState } from "react";
-import { Button, List, Divider, Input, Card, DatePicker, Slider, Switch, Progress, Spin } from "antd";
+import { Button, List, Divider, Input, Card, DatePicker, Slider, Switch, Progress, Spin, notification } from "antd";
 import { SyncOutlined } from '@ant-design/icons';
 import { Address, Balance } from "../components";
 import { parseEther, formatEther } from "@ethersproject/units";
 
-export default function ExampleUI({purpose, setPurposeEvents, address, mainnetProvider, userProvider, localProvider, yourLocalBalance, price, tx, readContracts, writeContracts }) {
+import { ethers } from "ethers";
+import { abi as IErc20 } from '../abis/erc20.json'
+import { parseUnits, formatUnits } from "@ethersproject/units";
+import { DROPLETPOOL_BENEFICIARY_ADDRESS } from "../constants";
+
+export default function ExampleUI({purpose, setPurposeEvents, address, mainnetProvider, userProvider, localProvider, yourLocalBalance, price, tx, readContracts, writeContracts, daiAddress, signer }) {
 
   const [newPurpose, setNewPurpose] = useState("loading...");
+
+  const [approving, setApproving] = useState(false)
+  const approve = async (_amount) => {
+    console.log("approving",_amount)
+    try {
+    setApproving(true)
+    let tokenContract = new ethers.Contract(daiAddress, IErc20, signer);
+    let amountToApprove = _amount==="0"?ethers.constants.MaxUint256:parseUnits(_amount,18)
+    console.log("amountToApprove",amountToApprove)
+    console.log("LmContract.address",writeContracts.LmContract.address)
+    let approval = await tokenContract.approve(writeContracts.LmContract.address, amountToApprove)
+    console.log('approval', approval)
+    setApproving(false)
+    notification.open({
+      message: 'Token transfer approved',
+      description:
+      `Aave can now move up to ${formatUnits(amountToApprove,18)} DAI`,
+    }) } catch (e) {
+      console.log(e)
+      setApproving(false)
+      notification.open({
+        message: 'Approval failed',
+        description:
+        `DAI approval did not take place`,
+      })
+    }
+  }
+
 
   return (
     <div>
@@ -17,6 +50,23 @@ export default function ExampleUI({purpose, setPurposeEvents, address, mainnetPr
       */}
       <div style={{border:"1px solid #cccccc", padding:16, width:400, margin:"auto",marginTop:64}}>
         <h2>Example UI:</h2>
+
+        <div style={{margin:8}}>
+          <Button loading={approving} onClick={()=>{
+            approve("1")
+          }}>approve DAI</Button>
+        </div>
+
+        <div style={{margin:8}}>
+          <Button onClick={()=>{
+            console.log("stakeAndCreateMembership")
+            let _amount = "1"
+            let bigAmount = _amount==="0"?ethers.constants.MaxUint256:parseUnits(_amount,18)
+            tx( writeContracts.LmContract.stakeAndCreateMembership(DROPLETPOOL_BENEFICIARY_ADDRESS, "Discord", "Private guild", 'https://miro.medium.com/max/2000/1*cETThqs2Gri0yPqlNSOhxw.png', 'https://discord.com', bigAmount) )
+          }}>stakeAndCreateMembership</Button>
+        </div>
+
+        <Divider/>
 
         <h4>purpose: {purpose}</h4>
 

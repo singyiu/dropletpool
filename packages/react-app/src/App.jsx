@@ -12,8 +12,9 @@ import { Header, Account, Faucet, Ramp, Contract, GasGauge } from "./components"
 import { Transactor } from "./helpers";
 import { formatEther, parseEther } from "@ethersproject/units";
 //import Hints from "./Hints";
-import { Hints, ExampleUI, Subgraph } from "./views"
-import { INFURA_ID, DAI_ADDRESS, DAI_ABI, NETWORK, NETWORKS } from "./constants";
+import { Hints, ExampleUI, Subgraph, ServiceProvider, Member, DiscordBot } from "./views"
+import { INFURA_ID, DAI_ABI, NETWORK, NETWORKS } from "./constants";
+
 /*
     Welcome to 🏗 scaffold-eth !
 
@@ -34,10 +35,10 @@ import { INFURA_ID, DAI_ADDRESS, DAI_ABI, NETWORK, NETWORKS } from "./constants"
 */
 
 /// 📡 What chain are your contracts deployed to?
-const targetNetwork = NETWORKS['localhost']; // <------- select your target frontend network (localhost, rinkeby, xdai, mainnet)
+const targetNetwork = NETWORKS['kovan']; // <------- select your target frontend network (localhost, rinkeby, xdai, mainnet)
 
 // 😬 Sorry for all the console logging
-const DEBUG = true
+const DEBUG = false
 
 // 🛰 providers
 if(DEBUG) console.log("📡 Connecting to Mainnet Ethereum");
@@ -110,14 +111,24 @@ function App(props) {
   //const myMainnetBalance = useContractReader({DAI: mainnetDAIContract},"DAI", "balanceOf",["0x34aA3F359A9D614239015126635CE7732c18fDF3"])
   //console.log("💲 myMainnetBalance:",myMainnetBalance)
   //
+  const daiAddress = targetNetwork.daiAddress
+  //console.log("daiAddress", daiAddress)
+  const localDAIContract = useExternalContractLoader(localProvider, daiAddress, DAI_ABI)
 
   // keep track of a variable from the contract in the local React state:
   const purpose = useContractReader(readContracts,"YourContract", "purpose")
-  console.log("🤗 purpose:",purpose)
+  //console.log("🤗 purpose:",purpose)
 
   //📟 Listen for broadcast events
   const setPurposeEvents = useEventListener(readContracts, "YourContract", "SetPurpose", localProvider, 1);
-  console.log("📟 SetPurpose events:",setPurposeEvents)
+  //console.log("📟 SetPurpose events:",setPurposeEvents)
+
+  //LmContract //Lossless Membership
+  const serviceProviderMpIds = useContractReader(readContracts,"LmContract", "getMembershipProgramIdList", [address])
+  const numOfMP = useContractReader(readContracts,"LmContract", "numOfMP")
+  const allCreateMStakeSum = useContractReader(readContracts,"LmContract", "allCreateMStakeSum")
+  const allMembershipStakeSum = useContractReader(readContracts,"LmContract", "allMembershipStakeSum")
+  const numOfAllMembers = useContractReader(readContracts,"LmContract", "numOfAllMembers")
 
   /*
   const addressFromENS = useResolveName(mainnetProvider, "austingriffith.eth");
@@ -202,6 +213,12 @@ function App(props) {
           <Menu.Item key="/subgraph">
             <Link onClick={()=>{setRoute("/subgraph")}} to="/subgraph">Subgraph</Link>
           </Menu.Item>
+          <Menu.Item key="/serviceprovider">
+            <Link onClick={()=>{setRoute("/serviceprovider")}} to="/serviceprovider">Register Service</Link>
+          </Menu.Item>
+          <Menu.Item key="/member">
+            <Link onClick={()=>{setRoute("/member")}} to="/member">Memberships</Link>
+          </Menu.Item>
         </Menu>
 
         <Switch>
@@ -212,6 +229,7 @@ function App(props) {
                 and give you a form to interact with it locally
             */}
 
+            {/*
             <Contract
               name="YourContract"
               signer={userProvider.getSigner()}
@@ -219,7 +237,15 @@ function App(props) {
               address={address}
               blockExplorer={blockExplorer}
             />
+            */}
 
+            <Contract
+              name="LmContract"
+              signer={userProvider.getSigner()}
+              provider={localProvider}
+              address={address}
+              blockExplorer={blockExplorer}
+            />
 
             { /* uncomment for a second contract:
             <Contract
@@ -263,6 +289,8 @@ function App(props) {
               readContracts={readContracts}
               purpose={purpose}
               setPurposeEvents={setPurposeEvents}
+              daiAddress={daiAddress}
+              signer={userProvider.getSigner()}
             />
           </Route>
           <Route path="/subgraph">
@@ -272,6 +300,50 @@ function App(props) {
             writeContracts={writeContracts}
             mainnetProvider={mainnetProvider}
             />
+          </Route>
+          <Route path="/serviceprovider">
+            <ServiceProvider
+              address={address}
+              userProvider={userProvider}
+              mainnetProvider={mainnetProvider}
+              localProvider={localProvider}
+              yourLocalBalance={yourLocalBalance}
+              price={price}
+              tx={tx}
+              writeContracts={writeContracts}
+              readContracts={readContracts}
+              purpose={purpose}
+              setPurposeEvents={setPurposeEvents}
+              signer={userProvider.getSigner()}
+              daiContract={localDAIContract}
+              serviceProviderMpIds={serviceProviderMpIds}
+              numOfMP={numOfMP}
+              daiAddress={daiAddress}
+            />
+          </Route>          
+          <Route path="/member">
+            <Member
+              address={address}
+              userProvider={userProvider}
+              mainnetProvider={mainnetProvider}
+              localProvider={localProvider}
+              yourLocalBalance={yourLocalBalance}
+              price={price}
+              tx={tx}
+              writeContracts={writeContracts}
+              readContracts={readContracts}
+              purpose={purpose}
+              setPurposeEvents={setPurposeEvents}
+              signer={userProvider.getSigner()}
+              daiContract={localDAIContract}
+              serviceProviderMpIds={serviceProviderMpIds}
+              numOfMP={numOfMP}
+              daiAddress={daiAddress}
+            />
+          </Route>
+          <Route path="/discordbot/:targetMpId/:guildId/:userId/:roleId" render={(props) => (
+            <DiscordBot {...props} address={address} readContracts={readContracts} localProvider={localProvider} />
+          )}>
           </Route>
         </Switch>
       </BrowserRouter>
