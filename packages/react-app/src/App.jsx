@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { BrowserRouter, Switch, Route, Link } from "react-router-dom";
+import { BrowserRouter, Switch, Route, Link, Redirect } from "react-router-dom";
 import "antd/dist/antd.css";
 import {  JsonRpcProvider, Web3Provider } from "@ethersproject/providers";
 import "./App.css";
@@ -209,7 +209,7 @@ function App(props) {
 
         <Menu style={{ textAlign:"center" }} selectedKeys={[route]} mode="horizontal">
           <Menu.Item key="/">
-            <Link onClick={()=>{setRoute("/")}} to="/">Lossless Membership Contract</Link>
+            <Link onClick={()=>{setRoute("/contracts")}} to="/contracts">Lossless Membership Contract</Link>
           </Menu.Item>
           {/*
           <Menu.Item key="/hints">
@@ -231,7 +231,7 @@ function App(props) {
         </Menu>
 
         <Switch>
-          <Route exact path="/">
+          <Route exact path="/contracts">
             {/*
                 🎛 this scaffolding is full of commonly used components
                 this <Contract/> component will automatically parse your ABI
@@ -353,6 +353,9 @@ function App(props) {
           <Route path="/discordbot/:targetMpId/:guildId/:userId/:roleId" render={(props) => (
             <DiscordBot {...props} address={address} readContracts={readContracts} localProvider={localProvider} />
           )}>
+          </Route>
+          <Route exact path="/">
+            <Redirect to="/member" />
           </Route>
         </Switch>
       </BrowserRouter>
