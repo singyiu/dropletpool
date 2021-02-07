@@ -269,12 +269,12 @@ const MpCell = (props) => {
         {mp ?
               <Card>
                   <Image src={mp.imageUrl} wrapped ui={false} as='a' centered href={mp.linkUrl} target='_blank' />
-                    <Card.Content>
-                      <Card.Header>{mp.title}</Card.Header>
-                      <Card.Meta>
+                    <Card.Content style={isUserAMember ? {backgroundColor:'#1A1917'} : {backgroundColor:'#FFFFFF'}}>
+                      <Card.Header style={isUserAMember ? {color:'#FFFFFF'} : {color:'#1A1917'}}>{mp.title}</Card.Header>
+                      <Card.Meta style={isUserAMember ? {color:'#AAAAAA'} : {color:'#888888'}}>
                         <span className='date'>2021</span>
                       </Card.Meta>
-                      <Card.Description>
+                      <Card.Description style={isUserAMember ? {color:'#FFFFFF'} : {color:'#1A1917'}}>
                         {mp.description}
                       </Card.Description>
                     </Card.Content>

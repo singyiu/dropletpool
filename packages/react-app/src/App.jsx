@@ -15,6 +15,8 @@ import { formatEther, parseEther } from "@ethersproject/units";
 import { Hints, ExampleUI, Subgraph, ServiceProvider, Member, DiscordBot } from "./views"
 import { INFURA_ID, DAI_ABI, NETWORK, NETWORKS } from "./constants";
 
+import { Image } from 'semantic-ui-react';
+
 /*
     Welcome to 🏗 scaffold-eth !
 
@@ -196,14 +198,20 @@ function App(props) {
     <div className="App">
 
       {/* ✏️ Edit the header and change the title to your project name */}
-      <Header />
+      <Header numOfAllMembers={numOfAllMembers ? numOfAllMembers : 0} allCreateMStakeSum={allCreateMStakeSum ? allCreateMStakeSum : 0} allMembershipStakeSum={allMembershipStakeSum ? allMembershipStakeSum : 0}/>
+
+      <div style={{ position: "fixed", textAlign: "left", left: 0, bottom: 0, padding: 0 }}>
+          <Image src='beach.png'></Image>
+      </div>
+
       {networkDisplay}
       <BrowserRouter>
 
         <Menu style={{ textAlign:"center" }} selectedKeys={[route]} mode="horizontal">
           <Menu.Item key="/">
-            <Link onClick={()=>{setRoute("/")}} to="/">YourContract</Link>
+            <Link onClick={()=>{setRoute("/")}} to="/">Lossless Membership Contract</Link>
           </Menu.Item>
+          {/*
           <Menu.Item key="/hints">
             <Link onClick={()=>{setRoute("/hints")}} to="/hints">Hints</Link>
           </Menu.Item>
@@ -213,11 +221,12 @@ function App(props) {
           <Menu.Item key="/subgraph">
             <Link onClick={()=>{setRoute("/subgraph")}} to="/subgraph">Subgraph</Link>
           </Menu.Item>
+          */}
           <Menu.Item key="/serviceprovider">
             <Link onClick={()=>{setRoute("/serviceprovider")}} to="/serviceprovider">Register Service</Link>
           </Menu.Item>
           <Menu.Item key="/member">
-            <Link onClick={()=>{setRoute("/member")}} to="/member">Memberships</Link>
+            <Link onClick={()=>{setRoute("/member")}} to="/member">Memberships to Join</Link>
           </Menu.Item>
         </Menu>
 
