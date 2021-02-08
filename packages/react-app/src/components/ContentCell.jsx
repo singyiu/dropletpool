@@ -91,7 +91,7 @@ const AddMPButton = (props) => {
       let amountToApprove = _amount==="0"?ethers.constants.MaxUint256:parseUnits(_amount,18)
       console.log("amountToApprove",amountToApprove)
       console.log("LmContract.address",props.writeContracts.LmContract.address)
-      let approval = await tokenContract.approve(props.writeContracts.LmContract.address, amountToApprove)
+      let approval = await props.tx( tokenContract.approve(props.writeContracts.LmContract.address, amountToApprove) )
       console.log('approval', approval)
       setApproving(false)
       setDaiApproved(true)
@@ -205,7 +205,7 @@ const MpCell = (props) => {
       try {
       setIsDaiApproving(true)
       let tokenContract = new ethers.Contract(props.daiAddress, IErc20, props.signer);
-      let approval = await tokenContract.approve(props.writeContracts.LmContract.address, _amount)
+      let approval = await props.tx( tokenContract.approve(props.writeContracts.LmContract.address, _amount) )
       console.log('approval', approval)
       setIsDaiApproving(false)
       setIsDaiApproved(true)

@@ -11,7 +11,8 @@ It is a new form of lossless and decentralized membership model unlock by the po
 # Demo
 
 [![Demo](https://img.youtube.com/vi/EB5o7A9uX78/0.jpg)](https://youtu.be/EB5o7A9uX78)
-[Demo site on Kovan](https://ipfs.io/ipfs/Qmb1fPDD4mTtGV4F59FfhRbV9Vv3yv8wohadApuFk9ZUvJ)
+
+[Demo site on Kovan](https://ipfs.io/ipfs/QmTfVwe2Yf1nY6wBktGDbrbRsr9X3SqF3S5gUyYLG9Kbdu)
 
 ---
 
